@@ -1,27 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart'; // Make sure this file exists
+import 'firebase_options.dart';
+
+import 'pages/login_page.dart';
+//import 'pages/register_page.dart';
+//import 'pages/home_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
+// root for app
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Firebase Setup Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-      ),
-      home: Scaffold(
-        appBar: AppBar(title: Text('Firebase is Ready!')),
-        body: Center(child: Text('🎉 Firebase Initialized')),
-      ),
+      title: 'Calendar/TODO App ',
+      debugShowCheckedModeBanner: false,
+      initialRoute: '/login', // default page
+      routes: {
+        '/login': (context) => const LoginPage(),
+        //'/register': (context) => const RegisterPage(),
+        //'/home': (context) => const HomePage(),
+      },
     );
   }
 }
