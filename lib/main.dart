@@ -3,7 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
 import 'pages/login_page.dart';
-//import 'pages/register_page.dart';
+import 'pages/register_page.dart';
 //import 'pages/home_page.dart';
 
 void main() async {
@@ -25,8 +25,9 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       initialRoute: '/login', // default page
       routes: {
+        // screens for my pages to nav to
         '/login': (context) => const LoginPage(),
-        //'/register': (context) => const RegisterPage(),
+        '/register': (context) => const RegisterPage(),
         //'/home': (context) => const HomePage(),
       },
     );

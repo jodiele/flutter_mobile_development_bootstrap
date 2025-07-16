@@ -70,7 +70,7 @@ class _LoginFormState extends State<LoginForm> { // for ui logic
             // Navigate to register page
             Navigator.pushNamed(context, '/register'); // this will switch to register page
           },
-          child: const Text("Register an account here!"),
+          child: const Text("Register an account"),
         ),
       ],
     );
