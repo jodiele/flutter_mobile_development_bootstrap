@@ -6,7 +6,7 @@ import 'firebase_options.dart';
 import 'pages/login_page.dart';
 import 'pages/register_page.dart';
 import 'pages/home_page.dart';
-//import 'pages/weekly_schedule_page.dart';
+import 'pages/weekly_schedule_page.dart';
 //import 'pages/todo_page.dart';
 //import 'pages/settings_page.dart';
 
@@ -34,7 +34,7 @@ class MyApp extends StatelessWidget {
         '/login': (context) => const LoginPage(),
         '/register': (context) => const RegisterPage(),
         '/home': (context) => const HomePage(),
-        //'/weekly': (context) => const WeeklySchedulePage(),
+        '/weekly': (context) => const WeeklySchedulePage(),
         //'/todo': (context) => const TodoPage(),
         //'/settings': (context) => const SettingsPage(),
       },

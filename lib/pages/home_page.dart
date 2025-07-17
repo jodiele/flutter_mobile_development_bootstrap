@@ -24,15 +24,15 @@ class HomePage extends StatelessWidget { // won't change/not dynamic
               // weekly schedule
               SizedBox(
                 // height and width for now
-                width: 130,
-                height: 130,
+                width: 160,
+                height: 160,
                 child: ElevatedButton(
                   onPressed: () {
                     Navigator.pushNamed(context, '/weekly'); // navs to page, will be implemented later
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.grey,
-                    foregroundColor: Colors.white,
+                    //backgroundColor: Colors.white,
+                    foregroundColor: Colors.black,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(25), // makes rounded corners
                     ),
@@ -45,15 +45,15 @@ class HomePage extends StatelessWidget { // won't change/not dynamic
 
               // todo list
               SizedBox(
-                width: 130,
-                height: 130,
+                width: 160,
+                height: 160,
                 child: ElevatedButton(
                   onPressed: () {
                     Navigator.pushNamed(context, '/todo'); // nav to page
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.grey,
-                    foregroundColor: Colors.white,
+                    //backgroundColor: Colors.grey,
+                    foregroundColor: Colors.black,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(25),
                     ),
@@ -66,15 +66,15 @@ class HomePage extends StatelessWidget { // won't change/not dynamic
 
               // settings
               SizedBox(
-                width: 130,
-                height: 130,
+                width: 160,
+                height: 160,
                 child: ElevatedButton(
                   onPressed: () {
                     Navigator.pushNamed(context, '/settings'); // nav to page
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.grey,
-                    foregroundColor: Colors.white,
+                    //backgroundColor: Colors.grey,
+                    foregroundColor: Colors.black,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(25),
                     ),
