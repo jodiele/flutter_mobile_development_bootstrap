@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-//import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class LoginPage extends StatelessWidget { // stateless is for nonchanging ui
   const LoginPage({super.key});
@@ -29,12 +29,29 @@ class _LoginFormState extends State<LoginForm> { // for ui logic
   final passwordController = TextEditingController();
 
 
-  void loginUser() { // called when user presses the login button
-    final email = emailController.text.trim(); // trim is to help remove any added spaces
+  // user log in, firebase auth is added
+  void loginUser() async {
+    // user input text fields
+    final email = emailController.text.trim();
     final password = passwordController.text.trim();
 
-    print('Logging in with $email and $password'); // add firebase later
-    Navigator.pushReplacementNamed(context, '/home');
+    // capture nav and scaffold, avoid widget deletion before await, same as register page
+    final navigator = Navigator.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword( // trying to log in with firebase auth
+        email: email,
+        password: password,
+      );
+
+      navigator.pushReplacementNamed('/home'); // will nav home if successful login
+    } on FirebaseAuthException catch (e) {
+      // error message if login is failed with snack bar of message
+      messenger.showSnackBar(
+        SnackBar(content: Text('Login failed: ${e.message}')),
+      );
+    }
   }
 
   @override
