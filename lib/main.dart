@@ -8,7 +8,7 @@ import 'pages/register_page.dart';
 import 'pages/home_page.dart';
 import 'pages/weekly_schedule_page.dart';
 import 'pages/todo_page.dart';
-//import 'pages/settings_page.dart';
+import 'pages/settings_page.dart';
 
 
 void main() async {
@@ -36,7 +36,7 @@ class MyApp extends StatelessWidget {
         '/home': (context) => const HomePage(),
         '/weekly': (context) => const WeeklySchedulePage(),
         '/todo': (context) => const ToDoPage(),
-        //'/settings': (context) => const SettingsPage(),
+        '/settings': (context) => const SettingsPage(),
       },
     );
   }
