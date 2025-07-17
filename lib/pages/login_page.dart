@@ -32,6 +32,7 @@ class _LoginFormState extends State<LoginForm> { // for ui logic
     final password = passwordController.text.trim();
 
     print('Logging in with $email and $password'); // add firebase later
+    Navigator.pushReplacementNamed(context, '/home');
   }
 
   @override

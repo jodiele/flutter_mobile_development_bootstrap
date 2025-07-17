@@ -16,7 +16,8 @@ class _RegisterPageState extends State<RegisterPage> {
   void registerUser() {
     final email = emailController.text.trim();
     final password = passwordController.text.trim();
-    print('Registering user: $email / $password'); // placeholder, will do firebase later
+    print('Registering user with email $email and password $password'); // placeholder, will do firebase later
+    Navigator.pushReplacementNamed(context, '/home');
   }
 
   // ui for registration page, same as login page
