@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+//import 'package:firebase_auth/firebase_auth.dart';
 
 class LoginPage extends StatelessWidget { // stateless is for nonchanging ui
   const LoginPage({super.key});
@@ -26,6 +27,7 @@ class _LoginFormState extends State<LoginForm> { // for ui logic
   // manages user input fields
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+
 
   void loginUser() { // called when user presses the login button
     final email = emailController.text.trim(); // trim is to help remove any added spaces

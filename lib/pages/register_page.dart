@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class RegisterPage extends StatefulWidget { // user input ui
   const RegisterPage({super.key});
@@ -12,12 +13,30 @@ class _RegisterPageState extends State<RegisterPage> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
 
-  // calls when register line is tapped
-  void registerUser() {
+
+  // calls when register line is tapped, firebase implementation
+  void registerUser() async {
+    // user input
     final email = emailController.text.trim();
     final password = passwordController.text.trim();
-    print('Registering user with email $email and password $password'); // placeholder, will do firebase later
-    Navigator.pushReplacementNamed(context, '/home');
+
+    // capture nav and scaffold, avoids widget deletion before await
+    final navigator = Navigator.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+
+    try {
+      await FirebaseAuth.instance.createUserWithEmailAndPassword( // try to create user with firebase
+        email: email,
+        password: password,
+      );
+
+      navigator.pushReplacementNamed('/home'); // nav to home, clears nav history so it won't go back to login
+    } on FirebaseAuthException catch (e) {
+      // if try is failed, shows snack bar with message of error
+      messenger.showSnackBar( // shows up at bottom of screen, goes away after a couple of seconds
+        SnackBar(content: Text('Error: ${e.message}')),
+      );
+    }
   }
 
   // ui for registration page, same as login page
