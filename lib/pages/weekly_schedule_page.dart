@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class WeeklySchedulePage extends StatefulWidget {
   const WeeklySchedulePage({super.key});
@@ -10,46 +12,44 @@ class WeeklySchedulePage extends StatefulWidget {
 class _WeeklySchedulePageState extends State<WeeklySchedulePage> {
   final days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
 
-  // stores list of tasks for each day
-  final Map<String, List<String>> _tasks = {
-    'Monday': [],
-    'Tuesday': [],
-    'Wednesday': [],
-    'Thursday': [],
-    'Friday': [],
-  };
+  // adds task to firestore
+  void _addTask(String day, String taskText) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (taskText.trim().isEmpty || user == null) return;
 
-  // adding a task, with showdialog
-  void _addTask(String day) {
-    String newTask = '';
+    await FirebaseFirestore.instance.collection('weekly_tasks').add({ // saves to weekly_tasks collection in firestore
+      'task': taskText.trim(),
+      'day': day,
+      'timestamp': Timestamp.now(),
+      'uid': user.uid,
+    });
+  }
 
-    // popup to add a task when clicked
+  // show dialog for inputting a task for a day
+  void _showAddTaskDialog(String day) {
+    final controller = TextEditingController();
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: Text('Add Task for $day'),
         content: TextField(
+          controller: controller,
           autofocus: true,
-          onChanged: (value) {
-            newTask = value; // updates with user input
-          },
           decoration: const InputDecoration(hintText: 'Enter task'),
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context), // cancels, closes dialog
-            child: const Text('Cancel'),
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'), // closes show dialog
           ),
+          // add task button
           TextButton(
             onPressed: () {
-              if (newTask.isNotEmpty) { // add it to task list
-                setState(() {
-                  _tasks[day]!.add(newTask);
-                });
-              }
-              Navigator.pop(context); // closes dialog after adding task
+              _addTask(day, controller.text);
+              Navigator.pop(context);
             },
-            child: const Text('Add task'),
+            child: const Text('Add Task'),
           ),
         ],
       ),
@@ -59,42 +59,85 @@ class _WeeklySchedulePageState extends State<WeeklySchedulePage> {
   // ui
   @override
   Widget build(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Weekly Schedule'),
         centerTitle: true,
       ),
 
-      // main screen
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-
-        // creates cards and displays each day of the week
-        child: ListView.builder(
-          itemCount: days.length, // 5
+        child: ListView.builder( // listview for each day's task
+          itemCount: days.length,
           itemBuilder: (context, index) {
-            final day = days[index]; // current day
-            final dayTasks = _tasks[day]!; // task list on that day
+            final day = days[index];
 
-            // has expandable section
             return Card(
               margin: const EdgeInsets.symmetric(vertical: 8),
-              child: ExpansionTile( // kind of like a drop down, expand/collapse section
+              child: ExpansionTile(
                 title: Text(day),
                 children: [
-                  // displays the task as a list
-                  for (var task in dayTasks)
-                    ListTile(
-                      title: Text(task),
-                      leading: const Icon(Icons.check_box_outline_blank), // icon for checking, will edit this later to change when clicked
-                    ),
+                  StreamBuilder<QuerySnapshot>( // shows that day's tasks
+                    stream: FirebaseFirestore.instance
+                        .collection('weekly_tasks')
+                        .where('uid', isEqualTo: user?.uid)
+                        .where('day', isEqualTo: day)
+                        .snapshots(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) { // in case of data needing to be loaded
+                        return const Center(child: CircularProgressIndicator());
+                      }
 
+                      final docs = snapshot.data?.docs ?? [];
 
-                  TextButton.icon(
-                    onPressed: () => _addTask(day),
+                      if (docs.isEmpty) {
+                        return const Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Text('No tasks yet'), // will show this if there are no tasks
+                        );
+                      }
+
+                      return Column(
+                        children: docs.map((doc) {
+                          final data = doc.data() as Map<String, dynamic>;
+                          final task = data['task'] ?? 'No task';
+                          final timestamp = data['timestamp'] as Timestamp?;
+
+                          return Dismissible( // swipe to delete, swipe left
+                            key: Key(doc.id),
+                            direction: DismissDirection.endToStart,
+                            background: Container(
+                              color: Colors.red,
+                              alignment: Alignment.centerRight,
+                              padding: const EdgeInsets.symmetric(horizontal: 20),
+                              child: const Icon(Icons.delete, color: Colors.white),
+                            ),
+                            onDismissed: (_) {
+                              FirebaseFirestore.instance // would delete task from firestore as well
+                                  .collection('weekly_tasks')
+                                  .doc(doc.id)
+                                  .delete();
+                            },
+                            child: ListTile(
+                              leading: const Icon(Icons.check_box_outline_blank), // will make interactable
+                              title: Text(task),
+                              subtitle: timestamp != null
+                                  ? Text('Added: ${timestamp.toDate()}')
+                                  : null,
+                            ),
+                          );
+                        }).toList(),
+                      );
+                    },
+                  ),
+
+                  TextButton.icon( // add task button
+                    onPressed: () => _showAddTaskDialog(day),
                     icon: const Icon(Icons.add),
                     label: const Text('Add Task'),
-                  )
+                  ),
                 ],
               ),
             );
