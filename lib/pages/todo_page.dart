@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class ToDoPage extends StatefulWidget {
   const ToDoPage({super.key});
@@ -8,27 +10,28 @@ class ToDoPage extends StatefulWidget {
 }
 
 class _ToDoPageState extends State<ToDoPage> {
-  final List<String> _tasks = []; // list to store all tasks
   final TextEditingController _controller = TextEditingController(); // manages user input
 
-  void _addTask(String task) {
-    if (task.trim().isEmpty) return; // can't add blank tasks
-    setState(() {
-      _tasks.add(task.trim());
-    });
-    _controller.clear(); // clears input area after adding a task
-  }
+  // adds tasks to firestore
+  void _addTask(String task) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (task.trim().isEmpty || user == null) return;
 
-  // method for removing tasks
-  void _removeTask(int index) {
-    setState(() {
-      _tasks.removeAt(index);
+    await FirebaseFirestore.instance.collection('todos').add({
+      'task': task.trim(),
+      'timestamp': Timestamp.now(),
+      'uid': user.uid,
     });
+
+    _controller.clear();
   }
 
   // ui
   @override
   Widget build(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser;
+    //print('Current user UID: ${user?.uid}'); // just to make sure the uid matches on firestore
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('To-Do List'),
@@ -65,25 +68,62 @@ class _ToDoPageState extends State<ToDoPage> {
           const Divider(),
 
           // list of tasks underneath user input and divider ui
+          // live firestore task list
           Expanded(
-            child: ListView.builder(
-              itemCount: _tasks.length,
-              itemBuilder: (context, index) => Dismissible( // widget for swiping to delete tasks
-                key: Key(_tasks[index]),
-                direction: DismissDirection.endToStart, // swipe left to delete
-                background: Container(
-                  color: Colors.red, // changes background to red when swiped
-                  alignment: Alignment.centerRight,
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: const Icon(Icons.delete, color: Colors.white), // trash can icon when swiping
-                ),
+            child: StreamBuilder<QuerySnapshot>(
+              stream: FirebaseFirestore.instance
+                  .collection('todos')
+                  .where('uid', isEqualTo: user?.uid) // gets the task for specific user
+                  //.orderBy('timestamp', descending: true) // this breaks my screen for some reason
+                  .snapshots(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator()); // shows if data is still loading
+                }
 
-                onDismissed: (_) => _removeTask(index),
-                child: ListTile( // tasks are shown as a list
-                  leading: const Icon(Icons.check_box_outline_blank), // checkbox icon, will make it interactable
-                  title: Text(_tasks[index]),
-                ),
-              ),
+                final docs = snapshot.data?.docs ?? [];
+
+                return ListView.builder(
+                  itemCount: docs.length,
+                    itemBuilder: (context, index) {
+                      final doc = docs[index];
+                      try {
+                        final data = doc.data() as Map<String, dynamic>; // gets doc field
+                        final taskText = data['task'] ?? 'No task';
+                        final timestamp = data['timestamp'] as Timestamp?;
+
+                        if (timestamp == null) {
+                          throw Exception("Missing timestamp"); // ensures timestamp is shown
+                        }
+
+                        // dismissible tile to delete tasks
+                        return Dismissible(
+                          key: Key(doc.id),
+                          direction: DismissDirection.endToStart, // swipe left
+                          background: Container(
+                            color: Colors.red,
+                            alignment: Alignment.centerRight,
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            child: const Icon(Icons.delete, color: Colors.white),
+                          ),
+                          onDismissed: (_) {
+                            FirebaseFirestore.instance.collection('todos').doc(doc.id).delete(); // also deletes task from firestore
+                          },
+                          child: ListTile(
+                            leading: const Icon(Icons.check_box_outline_blank), // will make interactable later
+                            title: Text(taskText),
+                            subtitle: Text('Added: ${timestamp.toDate()}'), // timestamp
+                          ),
+                        );
+                      } catch (e) { // if task can't be be read
+                        return ListTile(
+                          title: const Text('Error: could not load task'),
+                          subtitle: Text(e.toString()),
+                        );
+                      }
+                    }
+                );
+              },
             ),
           ),
         ],
