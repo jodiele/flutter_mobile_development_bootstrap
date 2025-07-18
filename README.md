@@ -1,13 +1,18 @@
 # Scheduler/TODO App
 
-## App Includes:
+### Frontend:
 
 - Login and Registration
 - Homepage
-- Weekly Schedule
+- Weekly Schedule 
 - TODO List
-- Settings
+- Settings 
+Built with Flutter widgets, tested on iOS platforms 
 
-Utilized Firebase Firestore with handling user input of tasks and Firebase Authentication with login/registration.
+### Backend:
+
+- Firebase Authentication for login and registration management
+- Firebase Firestore for storing and retrieving user input data 
+Firestore security rules are set to allow read/write access for only authenticated users for safety.
 
 Built by Jodie Le
