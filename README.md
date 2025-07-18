@@ -1,16 +1,13 @@
-# flutter_app_july_15_2025
+# Scheduler/TODO App
 
-A new Flutter project.
+## App Includes:
 
-## Getting Started
+- Login and Registration
+- Homepage
+- Weekly Schedule
+- TODO List
+- Settings
 
-This project is a starting point for a Flutter application.
+Utilized Firebase Firestore with handling user input of tasks and Firebase Authentication with login/registration.
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Built by Jodie Le
