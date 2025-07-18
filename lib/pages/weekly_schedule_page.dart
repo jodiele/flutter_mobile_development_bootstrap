@@ -39,12 +39,11 @@ class _WeeklySchedulePageState extends State<WeeklySchedulePage> {
           decoration: const InputDecoration(hintText: 'Enter task'),
         ),
         actions: [
-          TextButton(
+          TextButton( // cancels button
             onPressed: () => Navigator.pop(context),
             child: const Text('Cancel'), // closes show dialog
           ),
-          // add task button
-          TextButton(
+          TextButton( // add task button
             onPressed: () {
               _addTask(day, controller.text);
               Navigator.pop(context);
@@ -56,7 +55,7 @@ class _WeeklySchedulePageState extends State<WeeklySchedulePage> {
     );
   }
 
-  // ui
+  // weekly schedule ui
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
@@ -69,14 +68,14 @@ class _WeeklySchedulePageState extends State<WeeklySchedulePage> {
 
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: ListView.builder( // listview for each day's task
+        child: ListView.builder( // builds scrollable list of days
           itemCount: days.length,
           itemBuilder: (context, index) {
             final day = days[index];
 
             return Card(
               margin: const EdgeInsets.symmetric(vertical: 8),
-              child: ExpansionTile(
+              child: ExpansionTile( // expands to show tasks for each day
                 title: Text(day),
                 children: [
                   StreamBuilder<QuerySnapshot>( // shows that day's tasks
@@ -86,12 +85,10 @@ class _WeeklySchedulePageState extends State<WeeklySchedulePage> {
                         .where('day', isEqualTo: day)
                         .snapshots(),
                     builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) { // in case of data needing to be loaded
-                        return const Center(child: CircularProgressIndicator());
-                      }
-
+                      //if (snapshot.connectionState == ConnectionState.waiting) { // in case of data needing to be loaded
+                        //return const Center(child: CircularProgressIndicator());
+                      //}
                       final docs = snapshot.data?.docs ?? [];
-
                       if (docs.isEmpty) {
                         return const Padding(
                           padding: EdgeInsets.all(8.0),
@@ -99,6 +96,7 @@ class _WeeklySchedulePageState extends State<WeeklySchedulePage> {
                         );
                       }
 
+                      // building list of tasks
                       return Column(
                         children: docs.map((doc) {
                           final data = doc.data() as Map<String, dynamic>;
@@ -121,8 +119,28 @@ class _WeeklySchedulePageState extends State<WeeklySchedulePage> {
                                   .delete();
                             },
                             child: ListTile(
-                              leading: const Icon(Icons.check_box_outline_blank), // will make interactable
-                              title: Text(task),
+                              leading: IconButton( // interactive check box
+                                icon: Icon(
+                                  data['done'] == true
+                                      ? Icons.check_box
+                                      : Icons.check_box_outline_blank,
+                                ),
+                                onPressed: () {
+                                  FirebaseFirestore.instance
+                                      .collection('weekly_tasks')
+                                      .doc(doc.id)
+                                      .update({'done': !(data['done'] == true)}); // updates in firestore
+                                },
+                              ),
+                              title: Text(
+                                task,
+                                style: TextStyle(
+                                  decoration: data['done'] == true
+                                      ? TextDecoration.lineThrough // line through task when checked
+                                      : TextDecoration.none,
+                                  color: data['done'] == true ? Colors.grey : null,
+                                ),
+                              ),
                               subtitle: timestamp != null
                                   ? Text('Added: ${timestamp.toDate()}')
                                   : null,
