@@ -10,6 +10,7 @@ class WeeklySchedulePage extends StatefulWidget {
 }
 
 class _WeeklySchedulePageState extends State<WeeklySchedulePage> {
+  // days to be displayed in schedule
   final days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
 
   // adds task to firestore
@@ -28,7 +29,6 @@ class _WeeklySchedulePageState extends State<WeeklySchedulePage> {
   // show dialog for inputting a task for a day
   void _showAddTaskDialog(String day) {
     final controller = TextEditingController();
-
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -55,7 +55,7 @@ class _WeeklySchedulePageState extends State<WeeklySchedulePage> {
     );
   }
 
-  // weekly schedule ui
+  // ui for weekly schedule
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
@@ -85,9 +85,6 @@ class _WeeklySchedulePageState extends State<WeeklySchedulePage> {
                         .where('day', isEqualTo: day)
                         .snapshots(),
                     builder: (context, snapshot) {
-                      //if (snapshot.connectionState == ConnectionState.waiting) { // in case of data needing to be loaded
-                        //return const Center(child: CircularProgressIndicator());
-                      //}
                       final docs = snapshot.data?.docs ?? [];
                       if (docs.isEmpty) {
                         return const Padding(

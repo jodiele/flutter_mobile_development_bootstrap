@@ -19,14 +19,14 @@ void main() async {
   runApp(const MyApp());
 }
 
-// root for app
+// root widget
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Calendar/TODO App ',
+      title: 'TODO/Scheduling App',
       debugShowCheckedModeBanner: false,
       initialRoute: '/login', // default page
       routes: {

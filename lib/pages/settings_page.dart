@@ -8,10 +8,10 @@ class SettingsPage extends StatelessWidget {
   void _signOut(BuildContext context) async {
     final navigator = Navigator.of(context); // capturing nav object before logging out
     await FirebaseAuth.instance.signOut(); // logs out user with firebase auth
-    navigator.pushNamedAndRemoveUntil('/login', (route) => false); // clears nav stack, so when going back to the login screen
+    navigator.pushNamedAndRemoveUntil('/login', (route) => false); // navs back to login and clears previous pages from stack
   }
 
-  // ui
+  // ui for settings page
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,12 +27,12 @@ class SettingsPage extends StatelessWidget {
             title: const Text('Sign Out'),
             onTap: () => _signOut(context), // calls method
           ),
-
           const Divider(),
+
           const Padding(
             padding: EdgeInsets.all(16.0),
             child: Text(
-              'Built by Jodie',
+              'Built by Jodie!',
               textAlign: TextAlign.center,
               style: TextStyle(color: Colors.grey),
             ),

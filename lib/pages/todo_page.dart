@@ -23,8 +23,7 @@ class _ToDoPageState extends State<ToDoPage> {
       'uid': user.uid,
       'done': false, // default is unchecked
     });
-
-    _controller.clear();
+    _controller.clear(); // clear input after adding
   }
 
   // toggles if task is done
@@ -34,6 +33,7 @@ class _ToDoPageState extends State<ToDoPage> {
     });
   }
 
+  // ui for to-do page
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
@@ -52,7 +52,7 @@ class _ToDoPageState extends State<ToDoPage> {
             child: Row(
               children: [
                 Expanded(
-                  child: TextField(
+                  child: TextField( // task input area
                     controller: _controller,
                     decoration: const InputDecoration(
                       hintText: 'Add Task:',
@@ -68,21 +68,16 @@ class _ToDoPageState extends State<ToDoPage> {
               ],
             ),
           ),
-
           const Divider(),
 
-          // live task list from firestore
+          // task list from firestore
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
               stream: FirebaseFirestore.instance
                   .collection('todos')
                   .where('uid', isEqualTo: user?.uid) // fetch tasks from current user
-                  .snapshots(),
+                  .snapshots(), // updates live
               builder: (context, snapshot) {
-                //if (snapshot.connectionState == ConnectionState.waiting) {
-                  //return const Center(child: CircularProgressIndicator()); // will show if loading data
-                //}
-
                 final docs = snapshot.data?.docs ?? [];
 
                 return ListView.builder(
@@ -109,7 +104,7 @@ class _ToDoPageState extends State<ToDoPage> {
                           color: Colors.red,
                           alignment: Alignment.centerRight,
                           padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child: const Icon(Icons.delete, color: Colors.white),
+                          child: const Icon(Icons.delete, color: Colors.white), // trash can icon for when swiping to delete
                         ),
                         onDismissed: (_) {
                           FirebaseFirestore.instance
@@ -138,10 +133,10 @@ class _ToDoPageState extends State<ToDoPage> {
                             ),
                           ),
                           subtitle:
-                          Text('Added: ${timestamp.toDate().toLocal()}'),
+                          Text('Added: ${timestamp.toDate().toLocal()}'), // timestamp display
                         ),
                       );
-                    } catch (e) {
+                    } catch (e) { // error handling if task doesn't show up
                       return ListTile(
                         title: const Text('Error loading task'),
                         subtitle: Text(e.toString()),

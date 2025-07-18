@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-class RegisterPage extends StatefulWidget { // user input ui
+class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
 
   @override
@@ -9,10 +9,9 @@ class RegisterPage extends StatefulWidget { // user input ui
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  // controller text fields,  same as login
+  // controller text fields, same as login
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
-
 
   // calls when register line is tapped, firebase implementation
   void registerUser() async {
@@ -24,8 +23,9 @@ class _RegisterPageState extends State<RegisterPage> {
     final navigator = Navigator.of(context);
     final messenger = ScaffoldMessenger.of(context);
 
+    // try to create user with firebase
     try {
-      await FirebaseAuth.instance.createUserWithEmailAndPassword( // try to create user with firebase
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
@@ -84,4 +84,3 @@ class _RegisterPageState extends State<RegisterPage> {
     super.dispose();
   }
 }
-

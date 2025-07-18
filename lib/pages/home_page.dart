@@ -3,10 +3,11 @@ import 'package:flutter/material.dart';
 class HomePage extends StatelessWidget { // won't change/not dynamic
   const HomePage({super.key});
 
+  // ui for home page
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar( // top nav bar with title
+      appBar: AppBar(
         title: const Text('Homepage'),
         centerTitle: true,
       ),
@@ -28,7 +29,7 @@ class HomePage extends StatelessWidget { // won't change/not dynamic
                 height: 160,
                 child: ElevatedButton(
                   onPressed: () {
-                    Navigator.pushNamed(context, '/weekly'); // navs to page, will be implemented later
+                    Navigator.pushNamed(context, '/weekly'); // navs to page
                   },
                   style: ElevatedButton.styleFrom(
                     //backgroundColor: Colors.white,
@@ -43,7 +44,7 @@ class HomePage extends StatelessWidget { // won't change/not dynamic
                 ),
               ),
 
-              // todo list
+              // to-do list
               SizedBox(
                 width: 160,
                 height: 160,

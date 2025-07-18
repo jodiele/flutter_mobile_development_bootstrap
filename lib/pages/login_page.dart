@@ -23,13 +23,12 @@ class LoginForm extends StatefulWidget { // stateful is dynamic with user input
   State<LoginForm> createState() => _LoginFormState();
 }
 
-class _LoginFormState extends State<LoginForm> { // for ui logic
+class _LoginFormState extends State<LoginForm> {
   // manages user input fields
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
 
-
-  // user log in, firebase auth is added
+  // user log in with firebase auth
   void loginUser() async {
     // user input text fields
     final email = emailController.text.trim();
@@ -39,8 +38,9 @@ class _LoginFormState extends State<LoginForm> { // for ui logic
     final navigator = Navigator.of(context);
     final messenger = ScaffoldMessenger.of(context);
 
+    // trying to log in with firebase auth
     try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword( // trying to log in with firebase auth
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
@@ -54,6 +54,7 @@ class _LoginFormState extends State<LoginForm> { // for ui logic
     }
   }
 
+  // ui for login page
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -84,10 +85,9 @@ class _LoginFormState extends State<LoginForm> { // for ui logic
         ),
         const SizedBox(height: 12),
 
-        // link below login buttons to nav to register page, do after
+        // link below login buttons to nav to register page
         TextButton(
           onPressed: () {
-            // Navigate to register page
             Navigator.pushNamed(context, '/register'); // this will switch to register page
           },
           child: const Text("Register an account"),
